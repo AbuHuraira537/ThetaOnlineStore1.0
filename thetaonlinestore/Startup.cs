@@ -66,7 +66,7 @@ namespace thetaonlinestore
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=systemUsers}/{action=Create}/{id?}");
                 endpoints.MapRazorPages();
             });
         }
