@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "thetaonlinestore", "thetaonlinestore\thetaonlinestore.csproj", "{D59D7BDF-1B9B-46AA-8614-0E5A18AB7C05}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D59D7BDF-1B9B-46AA-8614-0E5A18AB7C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D59D7BDF-1B9B-46AA-8614-0E5A18AB7C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D59D7BDF-1B9B-46AA-8614-0E5A18AB7C05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D59D7BDF-1B9B-46AA-8614-0E5A18AB7C05}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5702CFE6-0F16-40F9-BE14-248DE25AE272}
+	EndGlobalSection
+EndGlobal
