@@ -2,7 +2,7 @@
 <html lang="en">
 @await Html.PartialAsync("_Head")
 <body>
-   @await Html.PartialAsync("_Header")
+    @await Html.PartialAsync("_Header")
     <div class="container">
 
 
@@ -19,8 +19,9 @@
             </div>
 
         </main>
-    </div>  
-    
-@await Html.PartialAsync("_Footer")
+    </div>
+
+    @await Html.PartialAsync("_Footer")
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
