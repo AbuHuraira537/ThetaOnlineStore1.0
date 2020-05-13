@@ -9,29 +9,22 @@ using thetaonlinestore.Models;
 
 namespace thetaonlinestore.Controllers
 {
-    public class SystemUsersController : Controller
+    public class ProductsController : Controller
     {
         private readonly ThetaOnlineStoreContext _context;
 
-        public SystemUsersController(ThetaOnlineStoreContext context)
+        public ProductsController(ThetaOnlineStoreContext context)
         {
             _context = context;
         }
 
-        // GET: SystemUsers
-        public async Task<IActionResult> Index(string query)
+        // GET: Products
+        public async Task<IActionResult> Index()
         {
-            if (query != null)
-            {
-                return View(await _context.SystemUser.Where(a => a.DisplayName.Contains(query)).ToListAsync());
-            }
-            else
-            {
-                return View(await _context.SystemUser.ToListAsync());
-            }
+            return View(await _context.Product.ToListAsync());
         }
 
-        // GET: SystemUsers/Details/5
+        // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -39,39 +32,39 @@ namespace thetaonlinestore.Controllers
                 return NotFound();
             }
 
-            var systemUser = await _context.SystemUser
+            var product = await _context.Product
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemUser == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(systemUser);
+            return View(product);
         }
 
-        // GET: SystemUsers/Create
+        // GET: Products/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: SystemUsers/Create
+        // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserName,Password,DisplayName,Email,Mobile,Status,Role,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] SystemUser systemUser)
+        public async Task<IActionResult> Create([Bind("Id,Name,ShortDescription,LongDescription,CurrentStock,CostPrice,SalePrice,Images,ProductCode,Status,OpeningStock,OpeningDate,ProductFeatures")] Product product)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(systemUser);
+                _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(systemUser);
+            return View(product);
         }
 
-        // GET: SystemUsers/Edit/5
+        // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -79,22 +72,22 @@ namespace thetaonlinestore.Controllers
                 return NotFound();
             }
 
-            var systemUser = await _context.SystemUser.FindAsync(id);
-            if (systemUser == null)
+            var product = await _context.Product.FindAsync(id);
+            if (product == null)
             {
                 return NotFound();
             }
-            return View(systemUser);
+            return View(product);
         }
 
-        // POST: SystemUsers/Edit/5
+        // POST: Products/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserName,Password,DisplayName,Email,Mobile,Status,Role,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] SystemUser systemUser)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ShortDescription,LongDescription,CurrentStock,CostPrice,SalePrice,Images,ProductCode,Status,OpeningStock,OpeningDate,ProductFeatures")] Product product)
         {
-            if (id != systemUser.Id)
+            if (id != product.Id)
             {
                 return NotFound();
             }
@@ -103,12 +96,12 @@ namespace thetaonlinestore.Controllers
             {
                 try
                 {
-                    _context.Update(systemUser);
+                    _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!SystemUserExists(systemUser.Id))
+                    if (!ProductExists(product.Id))
                     {
                         return NotFound();
                     }
@@ -119,10 +112,10 @@ namespace thetaonlinestore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(systemUser);
+            return View(product);
         }
 
-        // GET: SystemUsers/Delete/5
+        // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -130,30 +123,30 @@ namespace thetaonlinestore.Controllers
                 return NotFound();
             }
 
-            var systemUser = await _context.SystemUser
+            var product = await _context.Product
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemUser == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return View(systemUser);
+            return View(product);
         }
 
-        // POST: SystemUsers/Delete/5
+        // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var systemUser = await _context.SystemUser.FindAsync(id);
-            _context.SystemUser.Remove(systemUser);
+            var product = await _context.Product.FindAsync(id);
+            _context.Product.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool SystemUserExists(int id)
+        private bool ProductExists(int id)
         {
-            return _context.SystemUser.Any(e => e.Id == id);
+            return _context.Product.Any(e => e.Id == id);
         }
     }
 }

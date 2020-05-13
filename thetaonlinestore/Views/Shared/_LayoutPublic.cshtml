@@ -1,12 +1,13 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
-@await Html.PartialAsync("_Head")
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
 <body>
-   @await Html.PartialAsync("_Header")
+    @await Html.PartialAsync("_Header")
     <div class="container">
-
-
-
         <main role="main" class="pb-0">
             <div class="row">
                 <div class="col-md-2">
@@ -19,8 +20,7 @@
             </div>
 
         </main>
-    </div>  
-    
-@await Html.PartialAsync("_Footer")
+    </div>
+    @await Html.PartialAsync("_Footer")
 </body>
 </html>
