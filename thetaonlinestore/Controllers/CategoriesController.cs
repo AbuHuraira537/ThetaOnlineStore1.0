@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using thetaonlinestore.Models;
 
 namespace thetaonlinestore.Controllers
@@ -19,9 +20,16 @@ namespace thetaonlinestore.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string query)
         {
-            return View(await _context.Category.ToListAsync());
+            if (query != null)
+            {
+                return View(await _context.Category.Where(a => a.Name.Contains(query)).ToArrayAsync());
+            }
+            else
+            {
+                return View(await _context.Category.ToListAsync());
+            }
         }
 
         // GET: Categories/Details/5

@@ -19,9 +19,16 @@ namespace thetaonlinestore.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string query)
         {
-            return View(await _context.Product.ToListAsync());
+            if (query != null)
+            {
+                return View(await _context.Product.Where(a=>a.Name.Contains(query)).ToListAsync());
+            }
+            else
+            {
+                return View(await _context.Product.ToListAsync());
+            }
         }
 
         // GET: Products/Details/5
