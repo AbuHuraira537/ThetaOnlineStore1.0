@@ -32,22 +32,7 @@
                     @Html.DisplayNameFor(model => model.Status)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ShortDescription)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.LongDescription)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreatedDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CreatedBy)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ModifiedDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ModifiedBy)
+                   Actions
                 </th>
                 <th></th>
             </tr>
@@ -68,21 +53,7 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.ShortDescription)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LongDescription)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CreatedBy)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ModifiedDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ModifiedBy)
-                    </td>
+                    
                     <td>
 
                         <div class="modal" id="exampleModal-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -104,11 +75,11 @@
                                 </div>
                             </div>
                         </div>
-                        <span>
+                        
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-pencil"></span></a>
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary"><span class="fa fa-eye"></span></a>
                             <a href="#" data-toggle="model" data-target="exampleModalLabel-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
-                        </span>
+                        
                     </td>
                 </tr>
             }
