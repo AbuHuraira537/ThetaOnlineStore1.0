@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+@await Html.PartialAsync("_Head")
+<body>
+    @await Html.PartialAsync("_Header")
+    <div>
+
+
+
+        <main role="main" class="pb-0">
+            <div class="row">
+                <div class="col-md-2">
+                    @await Html.PartialAsync("_DashBoard")
+                </div>
+                <div class="col-md-9 pb-2">
+                    @RenderBody()
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    @await Html.PartialAsync("_Footer")
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
