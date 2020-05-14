@@ -1,7 +1,7 @@
 ﻿@model thetaonlinestore.Models.Product
 
 @{
-    Layout = null;
+    Layout = "_LayoutPublic";
 }
 
 <!DOCTYPE html>
@@ -105,16 +105,17 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a asp-action="Delete" asp-route-id="@Model.Id">Save changes</a>
+                    <a href="/products/DeleteConfirmed?Id=@Model.Id">Save changes</a>
                 </div>
             </div>
         </div>
     </div>
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" />
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Delete" class="btn btn-danger"  />
+        <a asp-action="Index" class="btn btn-primary"  data-toggle="model" data-target="#exampleModal-@Model.Id">Back to List</a>
     </form>
+   
 </div>
 </body>
 </html>
