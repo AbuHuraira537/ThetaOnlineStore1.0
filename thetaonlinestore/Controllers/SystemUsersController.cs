@@ -176,7 +176,11 @@ namespace thetaonlinestore.Controllers
 
             return View();
         }
-
+        public IActionResult LogOut()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction(nameof(LogIn));
+        }
 
     }
 }
