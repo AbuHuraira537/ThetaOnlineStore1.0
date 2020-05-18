@@ -78,8 +78,11 @@
                         
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-pencil"></span></a>
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary"><span class="fa fa-eye"></span></a>
+                        @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
+
+                        {
                             <a href="#" data-toggle="model" data-target="exampleModalLabel-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
-                        
+                        }
                     </td>
                 </tr>
             }

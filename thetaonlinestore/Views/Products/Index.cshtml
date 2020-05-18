@@ -53,7 +53,12 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
+                        string cls = "table-success";
+                        if(item.Status=="InActive")
+                        {
+                            cls = "table-danger";
+                        }
+                        <tr class="@cls">
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
@@ -98,7 +103,10 @@
                                 <span>
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-pencil"></span></a>
                                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn bg-secondary"><span class="fa fa-eye"></span></a>
-                                    <a href="#" data-toggle="modal" data-target="#exampleModal-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
+                                    @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
+                                    { 
+                                        <a href="#" data-toggle="modal" data-target="#exampleModal-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
+                                    }
                                 </span>
                             </td>
                         </tr>

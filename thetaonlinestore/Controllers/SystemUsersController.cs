@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace thetaonlinestore.Controllers
 
         public SystemUsersController(ThetaOnlineStoreContext context)
         {
+           
             _context = context;
         }
 
@@ -155,5 +157,26 @@ namespace thetaonlinestore.Controllers
         {
             return _context.SystemUser.Any(e => e.Id == id);
         }
+        [HttpGet]
+        public IActionResult LogIn()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LogIn(SystemUser user)
+        {
+            SystemUser tempuser = await _context.SystemUser.FindAsync(user.Id);
+            if(tempuser!=null)
+            {
+                HttpContext.Session.SetString("DisplayName", user.DisplayName);
+                HttpContext.Session.SetString("Role", user.Role);
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View();
+        }
+
+
     }
 }

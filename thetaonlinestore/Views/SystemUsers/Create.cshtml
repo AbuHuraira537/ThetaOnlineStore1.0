@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Create";
 }
-
+@Context.Session.GetString("ename")
 <h1>Create</h1>
 
 <h4>SystemUser</h4>
@@ -39,12 +39,22 @@
             </div>
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
+                <select asp-for="Status" class="form-control js-example-basic-multiple-limit">
+                    <option value="">Choose Status...</option>
+                    <option value="Active">Active</option>
+                    <option value="InActive">InActive</option>
+                </select>
                 <span asp-validation-for="Status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Role" class="control-label"></label>
-                <input asp-for="Role" class="form-control" />
+                <select asp-for="Role" class="form-control js-example-basic-multiple-limit">
+                    <option value="">Choose Role...</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Staff">Staff</option>
+                    <option value="User">User</option>
+                </select>
+                
                 <span asp-validation-for="Role" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -74,6 +84,9 @@
 
     $(function () {
         $(".datepicker").datepicker();
+        $(".js-example-basic-multiple-limit").select2({
+            maximumSelectionLength: 2
+        });
     });
 
     </script>
