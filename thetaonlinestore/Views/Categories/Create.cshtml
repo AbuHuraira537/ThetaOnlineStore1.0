@@ -9,7 +9,7 @@
     <hr />
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="Create">
+            <form asp-action="Create" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="Picture" class="control-label"></label>
-                    <input asp-for="Picture" class="form-control" />
+                    <input type="file" id="CImage" name="CImage" class="form-control"/>
                     <span asp-validation-for="Picture" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -36,17 +36,7 @@
                     <input asp-for="LongDescription" class="form-control" />
                     <span asp-validation-for="LongDescription" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <label asp-for="CreatedDate" class="control-label"></label>
-                    <input asp-for="CreatedDate" class="form-control datepicker" />
-                    <span asp-validation-for="CreatedDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CreatedBy" class="control-label"></label>
-                    <input asp-for="CreatedBy" class="form-control" />
-                    <span asp-validation-for="CreatedBy" class="text-danger"></span>
-                </div>
-
+               
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
@@ -60,14 +50,11 @@
     @section Scripts
 {
         <script>
-
-                $(function () {
-                    $(".datepicker").datepicker();
-                });
+            $(function () {
+                $("#CreatedDate").datepicker({ dateFormat: "dd/mm/yy" });
+            });
 
         </script>
-
-
     }
 
 

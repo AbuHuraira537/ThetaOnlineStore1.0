@@ -66,6 +66,8 @@ namespace thetaonlinestore.Controllers
         {
             if (ModelState.IsValid)
             {
+                systemUser.CreatedBy = HttpContext.Session.GetString("UserName");
+                systemUser.CreatedDate = System.DateTime.Now;
                 _context.Add(systemUser);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -105,6 +107,8 @@ namespace thetaonlinestore.Controllers
             {
                 try
                 {
+                    systemUser.ModifiedBy = HttpContext.Session.GetString("UserName");
+                    systemUser.ModifiedDate = System.DateTime.Now;
                     _context.Update(systemUser);
                     await _context.SaveChangesAsync();
                 }
@@ -138,21 +142,18 @@ namespace thetaonlinestore.Controllers
             {
                 return NotFound();
             }
+            else
+            {
+                
+                _context.SystemUser.Remove(systemUser);
+                await _context.SaveChangesAsync();
+            }
 
-            return View(systemUser);
-        }
-
-        // POST: SystemUsers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var systemUser = await _context.SystemUser.FindAsync(id);
-            _context.SystemUser.Remove(systemUser);
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        // POST: SystemUsers/Delete/5
+      
         private bool SystemUserExists(int id)
         {
             return _context.SystemUser.Any(e => e.Id == id);
@@ -166,20 +167,46 @@ namespace thetaonlinestore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LogIn(SystemUser user)
         {
-            SystemUser tempuser = await _context.SystemUser.FindAsync(user.Id);
+            SystemUser tempuser = await _context.SystemUser.Where(a => a.UserName == user.UserName && a.Password == user.Password).FirstOrDefaultAsync();
             if(tempuser!=null)
             {
-                HttpContext.Session.SetString("DisplayName", user.DisplayName);
-                HttpContext.Session.SetString("Role", user.Role);
+                HttpContext.Session.SetString("DisplayName", tempuser.DisplayName);
+                HttpContext.Session.SetString("Role", tempuser.Role);
+                HttpContext.Session.SetString("UserName", tempuser.UserName);
                 return RedirectToAction(nameof(Index));
             }
+            else
+            {
+                ModelState.AddModelError("", "invalid credentials");
+                return View();
+            }
 
-            return View();
         }
         public IActionResult LogOut()
         {
             HttpContext.Session.Clear();
             return RedirectToAction(nameof(LogIn));
+        }
+        public string deleteUser(int id)
+        {
+            try { 
+            SystemUser su = _context.SystemUser.Where(a => a.Id == id).FirstOrDefault();
+            if(su!=null)
+            {
+                _context.SystemUser.Remove(su);
+                _context.SaveChanges();
+                    return "1";
+                }
+                else
+                {
+                    return "0";
+                }
+            }
+            catch
+            {
+                return "0";
+             
+            }
         }
 
     }

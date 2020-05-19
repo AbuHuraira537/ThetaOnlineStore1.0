@@ -4,14 +4,6 @@
     Layout = "_LayoutPublic";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>All Products</title>
-</head>
-<body>
     <form action="/Products/index" method="post">
         <label>Search Here</label>
         <input type="text" value="" class="form-control" id="query" name="query" />
@@ -20,7 +12,7 @@
     </form>
     <div class="row">
         <div class="col-md-12">
-            <table class="table">
+            <table class="table" id="ProductsTable">
                 <thead>
                     <tr>
                         <th>
@@ -58,7 +50,7 @@
                         {
                             cls = "table-danger";
                         }
-                        <tr class="@cls">
+                        <tr class="@cls" id="hide-@item.Id">
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
@@ -95,19 +87,22 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <a asp-action="Delete" asp-route-id="@item.Id">Save changes</a>
+                                                <a href="#" class="ajaxdelete" data-cid="@item.Id" data-dismiss="modal">Delete</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <span>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-pencil"></span></a>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn bg-secondary"><span class="fa fa-eye"></span></a>
-                                    @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
-                                    { 
-                                        <a href="#" data-toggle="modal" data-target="#exampleModal-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
+                                    @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Staff"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary" ><span class="fa fa-pencil"></span></a>
                                     }
-                                </span>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn bg-secondary"><span class="fa fa-eye"></span></a>
+                                        @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
+                                        {
+                                            <a href="#" data-toggle="modal" data-target="#exampleModal-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
+                                        }
+                                    </span>
                             </td>
                         </tr>
                     }
@@ -115,7 +110,44 @@
             </table>
         </div>
     </div>
-</body>
-</html>
+@section Scripts
+{
 
-<!-- Modal -->
+<script>
+    $(document).ready(function () {
+        $('#ProductsTable').DataTable();
+    });
+    $('.ajaxdelete').click(function () {
+    
+        var deleteb = $(this);
+        var deletebid = deleteb.data("cid");
+        alert(deletebid);
+        $.ajax({
+            
+            url: "/Products/deleteproduct",
+            type: "post",
+            data: {
+                id: deletebid
+            },
+            success: function (result) {
+                if (result == "1") {
+                    $("#hide-" + deletebid).fadeOut();
+                } else {
+                    
+                }
+            },
+            error: function (detail) {
+                alert(detail);
+            }
+
+        });
+
+
+    });
+
+
+</script>
+
+
+
+}

@@ -4,89 +4,119 @@
     Layout = "_LayoutCategory";
 }
 
-<!DOCTYPE html>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-    <h2 class="alert alert-success">All Categories</h2>
-    <form action="/Categories/index" method="post">
-        <label>Search Here</label>
-        <input type="text" value="" class="form-control" id="query" name="query" />
-        <input type="submit" value="Search" class="btn btn-secondary form-control pb-1" />
+<h2 class="alert alert-success">All Categories</h2>
+<form action="/Categories/index" method="post">
+    <label>Search Here</label>
+    <input type="text" value="" class="form-control" id="query" name="query" />
+    <input type="submit" value="Search" class="btn btn-secondary form-control pb-1" />
 
-    </form>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Picture)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
-                <th>
-                   Actions
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Picture)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Status)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ShortDescription)
-                    </td>
-                    
-                    <td>
+</form>
+<table class="table" id="CategoryTable">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Picture)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShortDescription)
+            </th>
+            <th>
+                Actions
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="hide-@item.Id">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    <img src="~/Images/CategoryImages/@item.Picture" alt="no image" style="max-height:80px;max-width:80px" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShortDescription)
+                </td>
 
-                        <div class="modal" id="exampleModal-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel-@item.Id">Modal title</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        ...
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">ConfirmDelete</a>
-                                    </div>
+                <td>
+
+                    <div class="modal" id="exampleModal-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel-@item.Id">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ...Confirmation of deletion!
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <a href="#" class="ajaxdelete" data-cid="@item.Id" data-dismiss="modal">Delete</a>
                                 </div>
                             </div>
                         </div>
-                        
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-pencil"></span></a>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary"><span class="fa fa-eye"></span></a>
-                        @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
+                    </div>
+                    @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Staff"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-pencil"></span></a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary"><span class="fa fa-eye"></span></a>
+                    @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
+                    {
+                        <a href="#" data-toggle="modal" data-target="#exampleModal-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts
+{
 
-                        {
-                            <a href="#" data-toggle="model" data-target="exampleModalLabel-@item.Id" class="btn btn-danger"><span class="fa fa-trash"></span></a>
-                        }
-                    </td>
-                </tr>
+    <script>
+        $(document).ready(function () {
+            $('#CategoryTable').DataTable();
+        });
+
+    $('.ajaxdelete').click(function () {
+
+        var deleteb = $(this);
+        var deletebid = deleteb.data("cid");
+        $.ajax({
+
+            url: "/Categories/deleteproduct",
+            type: "post",
+            data: {
+                id: deletebid
+            },
+            success: function (result) {
+                if (result == "1") {
+
+                    $('#hide-' + deletebid).fadeOut();
+                } 
+            },
+            error: function (detail) {
+                alert(detail);
             }
-        </tbody>
-    </table>
-</body>
-</html>
+        });
+    });
+    </script>
+
+
+
+}

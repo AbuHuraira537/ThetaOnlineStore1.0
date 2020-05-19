@@ -5,13 +5,13 @@
 }
 
 <h1>Index</h1>
-<form action="/SystemUsers/index" method="post" >
+<form action="/SystemUsers/index" method="post">
     <label>Search Here</label>
-    <input type="text" value="" class="form-control" id="query" name="query"/>
+    <input type="text" value="" class="form-control" id="query" name="query" />
     <input type="submit" value="Search" class="btn btn-secondary form-control pb-1" />
 
 </form>
-<table class="table">
+<table class="table" id="SystemUsersTable">
     <thead>
         <tr>
             <th>
@@ -39,11 +39,11 @@
         @foreach (var item in Model)
         {
             string cls = "table-success";
-            if(!string.IsNullOrEmpty(item.Status) && item.Status=="InActive")
+            if (!string.IsNullOrEmpty(item.Status) && item.Status == "InActive")
             {
                 cls = "table-danger";
             }
-            <tr class="@cls">
+            <tr class="@cls" id="hide-@item.Id">
                 <td>
                     @Html.DisplayFor(modelItem => item.DisplayName)
                 </td>
@@ -64,23 +64,25 @@
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel-@item.Id">Delete</h5>
+                                    <h5 class="modal-title" id="exampleModalLabel-@item.Id">Modal title</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Really want to delete....
+                                    ...Confirmation of deletion!
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-primary">Delete</a>
+                                    <a href="#" class="ajaxdelete" data-cid="@item.Id" data-dismiss="modal">Delete</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"> <span class="fa fa-pencil"></span></a>
+                    @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && (Context.Session.GetString("Role") == "Admin" || Context.Session.GetString("Role") == "Staff"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-success"> <span class="fa fa-pencil"></span></a>
+                    }
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary"><span class="fa fa-eye mb-0"></span></a>
                     @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
                     {
@@ -94,3 +96,43 @@
 </table>
 
 
+@section Scripts
+{
+
+    <script>
+        $(document).ready(function () {
+            $('#SystemUsersTable').DataTable();
+        });
+    $('.ajaxdelete').click(function () {
+
+        var deleteb = $(this);
+        var deletebid = deleteb.data("cid");
+        $.ajax({
+
+            url: "/SystemUsers/deleteUser",
+            type: "post",
+            data: {
+                id: deletebid
+            },
+            success: function (result) {
+                if (result == "1") {
+                    $("#hide-" + deletebid).fadeOut();
+                } else {
+
+                }
+            },
+            error: function (detail) {
+                alert(detail);
+            }
+
+        });
+
+
+    });
+
+
+    </script>
+
+
+
+}

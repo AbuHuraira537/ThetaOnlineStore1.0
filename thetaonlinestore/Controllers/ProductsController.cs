@@ -136,8 +136,14 @@ namespace thetaonlinestore.Controllers
             {
                 return NotFound();
             }
+            else
+            {
+                _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
+            }
 
-            return View(product);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Products/Delete/5
@@ -154,6 +160,18 @@ namespace thetaonlinestore.Controllers
         private bool ProductExists(int id)
         {
             return _context.Product.Any(e => e.Id == id);
+        }
+        public string deleteproduct(int id)
+        {
+            Product prod = _context.Product.Where(a => a.Id == id).FirstOrDefault();
+            if(prod!=null)
+            {
+                _context.Product.Remove(prod);
+                _context.SaveChanges();
+                return "1";
+            }
+            return "0";
+            
         }
     }
 }
