@@ -16,45 +16,68 @@ namespace thetaonlinestore.Controllers
 
         public SystemUsersController(ThetaOnlineStoreContext context)
         {
-           
-            _context = context;
+                _context = context;
+            
         }
 
         // GET: SystemUsers
         public async Task<IActionResult> Index(string query)
         {
-            if (query != null)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return View(await _context.SystemUser.Where(a => a.DisplayName.Contains(query)).ToListAsync());
+
+                if (query != null)
+                {
+                    return View(await _context.SystemUser.Where(a => a.DisplayName.Contains(query)).ToListAsync());
+                }
+                else
+                {
+                    return View(await _context.SystemUser.ToListAsync());
+                }
             }
             else
             {
-                return View(await _context.SystemUser.ToListAsync());
+                return RedirectToAction(nameof(LogIn));
             }
         }
 
         // GET: SystemUsers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return NotFound();
-            }
 
-            var systemUser = await _context.SystemUser
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemUser == null)
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var systemUser = await _context.SystemUser
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (systemUser == null)
+                {
+                    return NotFound();
+                }
+                return View(systemUser);
+            }
+            else
             {
-                return NotFound();
+                return RedirectToAction(nameof(LogIn));
             }
-
-            return View(systemUser);
+            
         }
 
         // GET: SystemUsers/Create
         public IActionResult Create()
         {
-            return View();
+            if (HttpContext.Session.GetString("Role") == "Admin")
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction(nameof(LogIn));
+            }
         }
 
         // POST: SystemUsers/Create
@@ -64,31 +87,47 @@ namespace thetaonlinestore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserName,Password,DisplayName,Email,Mobile,Status,Role,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] SystemUser systemUser)
         {
-            if (ModelState.IsValid)
+            if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                systemUser.CreatedBy = HttpContext.Session.GetString("UserName");
-                systemUser.CreatedDate = System.DateTime.Now;
-                _context.Add(systemUser);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                if (ModelState.IsValid)
+                {
+                    systemUser.CreatedBy = HttpContext.Session.GetString("UserName");
+                    systemUser.CreatedDate = System.DateTime.Now;
+                    _context.Add(systemUser);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(systemUser);
             }
-            return View(systemUser);
+            else
+            {
+                return RedirectToAction(nameof(LogIn));
+            }
         }
 
         // GET: SystemUsers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return NotFound();
-            }
 
-            var systemUser = await _context.SystemUser.FindAsync(id);
-            if (systemUser == null)
-            {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var systemUser = await _context.SystemUser.FindAsync(id);
+                if (systemUser == null)
+                {
+                    return NotFound();
+                }
+                return View(systemUser);
             }
-            return View(systemUser);
+            else
+            {
+                return RedirectToAction(nameof(LogIn));
+            }
         }
 
         // POST: SystemUsers/Edit/5
@@ -98,58 +137,74 @@ namespace thetaonlinestore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserName,Password,DisplayName,Email,Mobile,Status,Role,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] SystemUser systemUser)
         {
-            if (id != systemUser.Id)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return NotFound();
-            }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (id != systemUser.Id)
                 {
-                    systemUser.ModifiedBy = HttpContext.Session.GetString("UserName");
-                    systemUser.ModifiedDate = System.DateTime.Now;
-                    _context.Update(systemUser);
-                    await _context.SaveChangesAsync();
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                if (ModelState.IsValid)
                 {
-                    if (!SystemUserExists(systemUser.Id))
+                    try
                     {
-                        return NotFound();
+                        systemUser.ModifiedBy = HttpContext.Session.GetString("UserName");
+                        systemUser.ModifiedDate = System.DateTime.Now;
+                        _context.Update(systemUser);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!SystemUserExists(systemUser.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(systemUser);
             }
-            return View(systemUser);
+            else
+            {
+                return RedirectToAction(nameof(LogIn));
+            }
         }
 
         // GET: SystemUsers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                return NotFound();
-            }
 
-            var systemUser = await _context.SystemUser
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (systemUser == null)
-            {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var systemUser = await _context.SystemUser
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (systemUser == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+
+                    _context.SystemUser.Remove(systemUser);
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(Index));
             }
             else
             {
-                
-                _context.SystemUser.Remove(systemUser);
-                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(LogIn));
             }
-
-            return RedirectToAction(nameof(Index));
         }
 
         // POST: SystemUsers/Delete/5
@@ -189,7 +244,11 @@ namespace thetaonlinestore.Controllers
         }
         public string deleteUser(int id)
         {
-            try { 
+            if (HttpContext.Session.GetString("Role") == "Admin")
+            { 
+
+            try
+            { 
             SystemUser su = _context.SystemUser.Where(a => a.Id == id).FirstOrDefault();
             if(su!=null)
             {
@@ -206,6 +265,11 @@ namespace thetaonlinestore.Controllers
             {
                 return "0";
              
+            }
+            }
+            else
+            {
+                return "0";
             }
         }
 

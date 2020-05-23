@@ -73,7 +73,7 @@ namespace thetaonlinestore.Models
                     .HasColumnName("Current_Stock")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Images).HasMaxLength(50);
+                entity.Property(e => e.Images).HasMaxLength(1000);
 
                 entity.Property(e => e.LongDescription)
                     .HasColumnName("Long_Description")
@@ -95,13 +95,13 @@ namespace thetaonlinestore.Models
 
                 entity.Property(e => e.ProductFeatures)
                     .HasColumnName("Product_Features")
-                    .HasMaxLength(70);
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.SalePrice).HasColumnName("Sale_Price");
 
                 entity.Property(e => e.ShortDescription)
                     .HasColumnName("Short_Description")
-                    .HasMaxLength(50);
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.Status).HasMaxLength(50);
             });
@@ -111,6 +111,12 @@ namespace thetaonlinestore.Models
                 entity.Property(e => e.CreatedBy)
                     .HasColumnName("Created_By")
                     .HasMaxLength(50);
+                entity.Property(e => e.CV)
+                    .HasColumnName("cv")
+                    .HasMaxLength(50);
+                entity.Property(e => e.Image)
+                   .HasColumnName("image")
+                   .HasMaxLength(50);
 
                 entity.Property(e => e.CreatedDate)
                     .HasColumnName("Created_Date")

@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using thetaonlinestore.Models;
 
 namespace thetaonlinestore.Controllers
@@ -12,9 +15,11 @@ namespace thetaonlinestore.Controllers
     public class ProductsController : Controller
     {
         private readonly ThetaOnlineStoreContext _context;
+        private readonly IHostEnvironment ENV;
 
-        public ProductsController(ThetaOnlineStoreContext context)
+        public ProductsController(ThetaOnlineStoreContext context,IHostEnvironment _ENV)
         {
+            ENV = _ENV;
             _context = context;
         }
 
@@ -52,7 +57,14 @@ namespace thetaonlinestore.Controllers
         // GET: Products/Create
         public IActionResult Create()
         {
+            if(HttpContext.Session.GetString("Role")=="Admin")
+            { 
             return View();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // POST: Products/Create
@@ -60,31 +72,65 @@ namespace thetaonlinestore.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,ShortDescription,LongDescription,CurrentStock,CostPrice,SalePrice,Images,ProductCode,Status,OpeningStock,OpeningDate,ProductFeatures")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,ShortDescription,LongDescription,CurrentStock,CostPrice,SalePrice,Images,ProductCode,Status,OpeningStock,OpeningDate,ProductFeatures")] Product product, IList<IFormFile> PImages)
         {
-            if (ModelState.IsValid)
+            if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                string AllImages = "";
+                if (PImages != null && PImages.Count > 0)
+                {
+                    foreach (IFormFile image in PImages)
+                    {
+                        string FullPath = ENV.ContentRootPath + "\\wwwroot\\Images\\ProductImages\\";
+                        string FileName = Guid.NewGuid() + Path.GetExtension(image.FileName);
+                        string FPath = FullPath + FileName;
+                        FileStream FS = new FileStream(FPath, FileMode.Create);
+                        image.CopyTo(FS);
+                        AllImages += FileName + ",";
+
+                    }
+                }
+
+
+
+                if (ModelState.IsValid)
+                {
+
+                    AllImages = AllImages.Remove(AllImages.LastIndexOf(','));
+                    product.Images = AllImages;
+                    _context.Add(product);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(product);
             }
-            return View(product);
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var product = await _context.Product.FindAsync(id);
-            if (product == null)
+                var product = await _context.Product.FindAsync(id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                return View(product);
+            }
+            else
             {
                 return NotFound();
             }
-            return View(product);
         }
 
         // POST: Products/Edit/5
@@ -93,7 +139,8 @@ namespace thetaonlinestore.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,ShortDescription,LongDescription,CurrentStock,CostPrice,SalePrice,Images,ProductCode,Status,OpeningStock,OpeningDate,ProductFeatures")] Product product)
-        {
+        {if(HttpContext.Session.GetString("Role")=="Admin"||HttpContext.Session.GetString("Role")=="Staff")
+            { 
             if (id != product.Id)
             {
                 return NotFound();
@@ -120,30 +167,40 @@ namespace thetaonlinestore.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (product == null)
-            {
-                return NotFound();
+                var product = await _context.Product
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (product == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    _context.Product.Remove(product);
+                    await _context.SaveChangesAsync();
+                }
+                return RedirectToAction(nameof(Index));
             }
             else
             {
-                _context.Product.Remove(product);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
-
-
-            return RedirectToAction(nameof(Index));
         }
 
         // POST: Products/Delete/5
@@ -162,13 +219,15 @@ namespace thetaonlinestore.Controllers
             return _context.Product.Any(e => e.Id == id);
         }
         public string deleteproduct(int id)
-        {
-            Product prod = _context.Product.Where(a => a.Id == id).FirstOrDefault();
-            if(prod!=null)
+        {if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                _context.Product.Remove(prod);
-                _context.SaveChanges();
-                return "1";
+                Product prod = _context.Product.Where(a => a.Id == id).FirstOrDefault();
+                if (prod != null)
+                {
+                    _context.Product.Remove(prod);
+                    _context.SaveChanges();
+                    return "1";
+                }
             }
             return "0";
             

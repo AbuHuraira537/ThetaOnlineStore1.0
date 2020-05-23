@@ -58,7 +58,14 @@ namespace thetaonlinestore.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
-            return View();
+            if (HttpContext.Session.GetString("Role") == "Admin")
+            {
+                return View();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // POST: Categories/Create
@@ -78,41 +85,56 @@ namespace thetaonlinestore.Controllers
             string b = "";
             string a = a.Remove(b.LastIndexOf(","));
             */
-            string UniqueFileName = "";
-            if (CImage != null) { 
-            string PathToRoot = ENV.ContentRootPath;
-            string FinalPath = PathToRoot + "\\wwwroot\\Images\\CategoryImages\\";
-            UniqueFileName = Guid.NewGuid()+Path.GetExtension(CImage.FileName);
-            string FPath = FinalPath + UniqueFileName;
-            FileStream FS = new FileStream(FPath, FileMode.Create);
-            CImage.CopyTo(FS);
-            }
-            if (ModelState.IsValid)
+            if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                category.Picture = UniqueFileName;
-                category.CreatedDate = System.DateTime.Now;
-                category.CreatedBy = HttpContext.Session.GetString("UserName");
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                string UniqueFileName = "";
+                if (CImage != null)
+                {
+                    string PathToRoot = ENV.ContentRootPath;
+                    string FinalPath = PathToRoot + "\\wwwroot\\Images\\CategoryImages\\";
+                    UniqueFileName = Guid.NewGuid() + Path.GetExtension(CImage.FileName);
+                    string FPath = FinalPath + UniqueFileName;
+                    FileStream FS = new FileStream(FPath, FileMode.Create);
+                    CImage.CopyTo(FS);
+                }
+                if (ModelState.IsValid)
+                {
+                    category.Picture = UniqueFileName;
+                    category.CreatedDate = System.DateTime.Now;
+                    category.CreatedBy = HttpContext.Session.GetString("UserName");
+                    _context.Add(category);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(category);
             }
-            return View(category);
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Categories/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var category = await _context.Category.FindAsync(id);
-            if (category == null)
+                var category = await _context.Category.FindAsync(id);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+                return View(category);
+            }
+            else
             {
                 return NotFound();
             }
-            return View(category);
         }
 
         // POST: Categories/Edit/5
@@ -122,32 +144,39 @@ namespace thetaonlinestore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Picture,Status,ShortDescription,LongDescription,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] Category category)
         {
-            if (id != category.Id)
+            if (HttpContext.Session.GetString("Role") == "Admin" || HttpContext.Session.GetString("Role") == "Staff")
             {
-                return NotFound();
-            }
+                if (id != category.Id)
+                {
+                    return NotFound();
+                }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    category.ModifiedBy = HttpContext.Session.GetString("UserName");
-                    category.ModifiedDate = DateTime.Now.ToString();
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
+                    try
+                    {
+                        category.ModifiedBy = HttpContext.Session.GetString("UserName");
+                        category.ModifiedDate = DateTime.Now.ToString();
+                        _context.Update(category);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!CategoryExists(category.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
@@ -155,26 +184,33 @@ namespace thetaonlinestore.Controllers
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (HttpContext.Session.GetString("Role") == "Admin")
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var category = await _context.Category
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if (category == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    _context.Category.Remove(category);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+
+                }
+
             }
             else
             {
-                _context.Category.Remove(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-
+                return NotFound();
             }
-
-         
         }
 
         // POST: Categories/Delete/5
@@ -182,10 +218,17 @@ namespace thetaonlinestore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Category.FindAsync(id);
-            _context.Category.Remove(category);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (HttpContext.Session.GetString("Role") == "Admin")
+            {
+                var category = await _context.Category.FindAsync(id);
+                _context.Category.Remove(category);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         private bool CategoryExists(int id)
@@ -193,13 +236,15 @@ namespace thetaonlinestore.Controllers
             return _context.Category.Any(e => e.Id == id);
         }
         public string deleteproduct(int id)
-        {
-            Category cg = _context.Category.Where(a => a.Id == id).FirstOrDefault();
-            if(cg!=null)
+        {if (HttpContext.Session.GetString("Role") == "Admin")
             {
-                _context.Category.Remove(cg);
-                _context.SaveChanges();
-                return "1";
+                Category cg = _context.Category.Where(a => a.Id == id).FirstOrDefault();
+                if (cg != null)
+                {
+                    _context.Category.Remove(cg);
+                    _context.SaveChanges();
+                    return "1";
+                }
             }
             return "0";
             

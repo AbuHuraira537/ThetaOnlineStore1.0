@@ -92,6 +92,26 @@
     </dl>
 </div>
 <div>
+    @{
+        string[] allimages = null;
+        if (Model.Images != null)
+        {
+            allimages = Model.Images.Split(',');
+            foreach (string im in allimages)
+            {
+                <img src="~/Images/ProductImages/@im" alt="" />
+            }
+        }
+        else
+        {
+            <img src="#" alt="no image" />
+        }
+
+
+
+    }
+</div>
+<div>
     <div class="modal" id="exampleModal-@Model.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

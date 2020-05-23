@@ -17,5 +17,8 @@ namespace thetaonlinestore.Models
         public string CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string ModifiedBy { get; set; }
+        public string CV { get; set; }
+        public string Image { get; set; }
+
     }
 }

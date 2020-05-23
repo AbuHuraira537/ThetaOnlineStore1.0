@@ -46,7 +46,7 @@
                     @foreach (var item in Model)
                     {
                         string cls = "table-success";
-                        if(item.Status=="InActive")
+                        if (item.Status == "InActive")
                         {
                             cls = "table-danger";
                         }
@@ -61,7 +61,20 @@
                                 @Html.DisplayFor(modelItem => item.SalePrice)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Images)
+                                @{
+                                    if (item.Images != null)
+                                    {
+                                        string[] images=item.Images.Split(',');
+                                        <img src="~/Images/ProductImages/@images[0]" alt="no image" style="height:80px;width:80px"/>
+                                    }
+                                    else
+                                    {
+                                        
+                                        <img src="#" style="width:80px;height:80px" alt="no image"/>
+                                    }
+
+                                  }
+                                   
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.ProductCode)
