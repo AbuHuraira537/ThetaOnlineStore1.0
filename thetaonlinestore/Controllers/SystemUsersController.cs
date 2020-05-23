@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using thetaonlinestore.Models;
 
 namespace thetaonlinestore.Controllers
@@ -13,10 +15,12 @@ namespace thetaonlinestore.Controllers
     public class SystemUsersController : Controller
     {
         private readonly ThetaOnlineStoreContext _context;
+        private readonly IHostEnvironment ENV;
 
-        public SystemUsersController(ThetaOnlineStoreContext context)
+        public SystemUsersController(ThetaOnlineStoreContext context,IHostEnvironment _ENV)
         {
                 _context = context;
+                ENV = _ENV;
             
         }
 
@@ -85,11 +89,26 @@ namespace thetaonlinestore.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserName,Password,DisplayName,Email,Mobile,Status,Role,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] SystemUser systemUser)
+        public async Task<IActionResult> Create([Bind("Id,UserName,Password,DisplayName,Email,Mobile,Status,Role,CreatedDate,CreatedBy,ModifiedDate,ModifiedBy")] SystemUser systemUser,IFormFile UCV,IFormFile UImage)
         {
             if (HttpContext.Session.GetString("Role") == "Admin")
             {
+                if(UImage!=null && UCV != null)
+                { 
+                string RootPath = ENV.ContentRootPath;
+                string ImagePath = RootPath + "\\Images\\SystemUserImages\\";
+                string ImageName = Guid.NewGuid() + Path.GetExtension(UImage.FileName);
+                FileStream FS = new FileStream(ImagePath + ImageName, FileMode.Create);
+                UImage.CopyTo(FS);
+                    
+                    string CVPath = RootPath + "\\Docs\\Cvs\\";
+                    string CvName = Guid.NewGuid() + Path.GetExtension(UCV.FileName);
+                    FileStream fs = new FileStream(CVPath + CvName, FileMode.Create);
+                    UCV.CopyTo(fs);
 
+                    systemUser.Image = ImageName;
+                    systemUser.CV = CvName;
+                }
                 if (ModelState.IsValid)
                 {
                     systemUser.CreatedBy = HttpContext.Session.GetString("UserName");
