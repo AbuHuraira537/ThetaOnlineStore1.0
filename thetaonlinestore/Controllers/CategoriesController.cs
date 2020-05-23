@@ -64,7 +64,7 @@ namespace thetaonlinestore.Controllers
             }
             else
             {
-                return NotFound();
+                return RedirectToAction("/SystemUsers/LogIn");
             }
         }
 
@@ -110,7 +110,7 @@ namespace thetaonlinestore.Controllers
             }
             else
             {
-                return NotFound();
+                return RedirectToAction("/SystemUsers/LogIn");
             }
         }
 
@@ -133,7 +133,7 @@ namespace thetaonlinestore.Controllers
             }
             else
             {
-                return NotFound();
+                return RedirectToAction("/SystemUsers/LogIn");
             }
         }
 
@@ -175,7 +175,7 @@ namespace thetaonlinestore.Controllers
                 }
                 else
                 {
-                    return NotFound();
+                    return RedirectToAction("/SystemUsers/LogIn");
                 }
             }
             return View(category);
@@ -209,7 +209,7 @@ namespace thetaonlinestore.Controllers
             }
             else
             {
-                return NotFound();
+                return RedirectToAction("/SystemUsers/LogIn");
             }
         }
 
@@ -227,7 +227,7 @@ namespace thetaonlinestore.Controllers
             }
             else
             {
-                return NotFound();
+                return RedirectToAction("/SystemUsers/LogIn");
             }
         }
 
