@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using thetaonlinestore.Models;
+using HeyRed.Mime;
 
 namespace thetaonlinestore.Controllers
 {
@@ -16,6 +19,8 @@ namespace thetaonlinestore.Controllers
     {
         private readonly ThetaOnlineStoreContext _context;
         private readonly IHostEnvironment ENV;
+
+        public object MimeGuesser { get; private set; }
 
         public SystemUsersController(ThetaOnlineStoreContext context,IHostEnvironment _ENV)
         {
@@ -115,6 +120,40 @@ namespace thetaonlinestore.Controllers
                     systemUser.CreatedDate = System.DateTime.Now;
                     _context.Add(systemUser);
                     await _context.SaveChangesAsync();
+
+                    //sending sms
+                    string smsurl = "https://sendpk.com/api/sms.php?username=923036405108&password=bsef17m537&sender=Masking&mobile=923104866129&message=messagefromhuraira";
+
+                    WebRequest request = HttpWebRequest.Create(smsurl);
+                    WebResponse response = request.GetResponse();
+                    StreamReader reader = new StreamReader(response.GetResponseStream());
+                    string urlText = reader.ReadToEnd(); // it takes the response from your url. now you can use as your need  
+                  
+                    //mail
+                    MailMessage email = new MailMessage();
+                    email.From = new MailAddress("abouhuraira967@gmail.com", "ABU HURAIRA");
+                    email.To.Add("bsef17m537@pucit.edu.pk");
+                    email.Subject = "Testing Email";
+                    email.Body = "<h1>Testing completed:"+urlText+"</h1>";
+                    email.IsBodyHtml = true;
+                   string mt= MimeTypesMap.GetMimeType(ENV.ContentRootPath + "\\Images\\Docs\\Cvs\\" +systemUser.CV);
+                   // email.Attachments.Add(new Attachment("\\Images\\Docs\\Cvs\\" +systemUser.CV,mt));
+                    /*if(System.IO.File.Exists("/Docs/Cvs" + systemUser.CV))
+                    { 
+                    email.Attachments.Add(new Attachment("/Docs/Cvs" + systemUser.CV));
+                    }*/
+                    SmtpClient server = new SmtpClient();
+                    server.Host = "smtp.gmail.com";
+                    server.Credentials = new System.Net.NetworkCredential("abouhuraira967@gmail.com", "ABUHURAIRA");
+                    server.Port = 587; //other ports are 25 465
+                    server.EnableSsl = true;
+                    server.Send(email);
+
+
+                    //sending sms
+                    
+
+
                     return RedirectToAction(nameof(Index));
                 }
                 return View(systemUser);
@@ -244,9 +283,19 @@ namespace thetaonlinestore.Controllers
             SystemUser tempuser = await _context.SystemUser.Where(a => a.UserName == user.UserName && a.Password == user.Password).FirstOrDefaultAsync();
             if(tempuser!=null)
             {
-                HttpContext.Session.SetString("DisplayName", tempuser.DisplayName);
-                HttpContext.Session.SetString("Role", tempuser.Role);
+                if(!string.IsNullOrEmpty(tempuser.DisplayName))
+                {
+                    HttpContext.Session.SetString("DisplayName", tempuser.DisplayName);
+                }
+                if(!string.IsNullOrEmpty(tempuser.Role))
+                {
+
+                    HttpContext.Session.SetString("Role", tempuser.Role);
+                }
+                if(!string.IsNullOrEmpty(tempuser.UserName))
+                { 
                 HttpContext.Session.SetString("UserName", tempuser.UserName);
+                }
                 return RedirectToAction(nameof(Index));
             }
             else
