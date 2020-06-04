@@ -9,7 +9,7 @@
     <h4>Product</h4>
     <hr />
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-2">
             @{
                 string[] allimages = null;
                 if (Model.Images != null)
@@ -17,7 +17,7 @@
                     allimages = Model.Images.Split(',');
                     foreach (string im in allimages)
                     {
-                        <img src="~/Images/ProductImages/@im" alt="" style="max-height:80px;max-width:80px;" />
+                        <img src="~/Images/ProductImages/@im" alt="" style="max-height:80px;max-width:80px;" class="img-fluid img-thumbnail clicked" id="img+@im+" data-cid="@im" />
                     }
                 }
                 else
@@ -29,8 +29,17 @@
 
             }
         </div>
-
-        <div class="col-md-8">
+        <div class="col-md-2">
+            @{ 
+                if(Model.Images!=null)
+                {
+                    var img = Model.Images.Split(',');
+                    <img src="~/Images/ProductImages/@img[0]" alt="no image" class="img-fluid img-thumbnail "id="bimg"/>
+                }
+            }
+        </div>
+        
+        <div class="col-md-6">
             <dl class="row">
                 <dt class="col-sm-2">
                     @Html.DisplayNameFor(model => model.Name)
@@ -129,7 +138,7 @@
         </div>
     </div>
         
-    < a asp-action = "Edit" asp - route - id = "@Model.Id" class="btn btn-secondary">Edit</a>
+    <a asp-action="Edit" asp-route-id = "@Model.Id" class="btn btn-secondary">Edit</a>
     
 @if (!string.IsNullOrEmpty(Context.Session.GetString("Role")) && Context.Session.GetString("Role") == "Admin")
 {
@@ -137,3 +146,25 @@
 }
     <a asp-action="Index" class="btn btn-primary">BackHome</a>
 </div>
+@section Scripts
+{
+
+    <script>
+
+        $(function () {
+            $("#DashBoard").fadeOut();
+            $(".pb-2").addClass("col-md-12");
+            $(".pb-2").css("Margin-left:autp;margin-right:auto");
+        });
+        $(".clicked").click(function () {
+            var db = $(this);
+            var dbid = db.data('cid');
+            var id = "#img" + dbid;
+          
+            $("#bimg").attr("src", "/Images/ProductImages/" + dbid);
+        })
+
+    </script> 
+
+
+}
